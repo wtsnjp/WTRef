@@ -1,0 +1,181 @@
+\documentclass[a4paper,uplatex]{jsarticle}
+
+\usepackage{otf}
+\usepackage{enumitem}
+\usepackage{shortvrb}
+\MakeShortVerb{\|}
+\newcommand{\Meta}[1]{$\langle$\mbox{}\textit{#1}\mbox{}$\rangle$}
+\newcommand{\Note}{\par\noindent ※}
+\newenvironment{syntax}{\begin{quote}\small}{\end{quote}}
+
+\title{\textsf{WTRef}パッケージ (v0.1)}
+\author{ワトソン}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+WTシリーズは著者が\LaTeX 文書作成にあたってよく利用するマクロを集めたものである．
+\textsf{WTRef}パッケージはこのWTシリーズを構成するパッケージの1つであり，\LaTeX オリジナルの
+相互参照機能を拡張してスコープの指定と名前空間の分離，参照形式の柔軟な指定を可能にする．任意の
+\TeX エンジンと\LaTeXe の組み合わせで動作する．
+\end{abstract}
+
+\section{パッケージ読み込み}
+
+読み込みには |\usepackage| 命令を用いる．この際\textsf{WTRef}パッケージが管理する相互参照命令
+（後述）によって使用されるラベルの有効範囲（スコープ）をオプションとして指定することができる．
+%
+\begin{syntax}
+|\usepackage[|\Meta{scope}|]{wtref}|
+\end{syntax}
+
+パッケージオプションの\Meta{scope}に指定できる値は以下の4つである．ただし，\Meta{scope}の
+指定を省略した場合は\texttt{global}が設定される．
+%
+\begin{description}
+\item[|chapter|]
+スコープを章単位に設定する．|\chapter| 命令の存在しない環境で指定するとエラーになる．
+
+\item[|section|]
+スコープを節単位に設定する．
+
+\item[|subsection|]
+スコープを小節単位に設定する．
+
+\item[|global|]
+スコープを設定しない（デフォルト）．
+\end{description}
+
+\section{相互参照命令}
+
+\subsection{相互参照命令の新設}
+
+|\newref| 命令を用いて相互参照に用いる2つの命令の組を新設することができる．
+%
+\begin{syntax}
+|\newref{|\Meta{ref name}|}|
+\end{syntax}
+%
+ただし，この |\newref| 命令はプリアンブルでしか使用できない．また\Meta{ref name}に使えるのは
+原則として制御綴に使用できる文字のみであり（半角英字のみにしておくことを推奨），空であっては
+ならない．
+
+|\newref| 命令は指定した\Meta{ref name}に応じて |\|\Meta{ref name}|label|，|\|\Meta{ref name}|ref| という
+形をもつ新しい2つの命令を定義する．ここで前者の命令を\textbf{ラベル命令}，後者の命令を
+\textbf{参照命令}と呼ぶことにする．|\newref| 命令は同名の命令が既に存在していても，その定義を
+上書きするので\Meta{ref name}は注意して選ぶ必要がある．
+
+%プリアンブル中で
+%%
+%\begin{syntax}
+%|\newref{ex}|
+%\end{syntax}
+%%
+%のように宣言を行うと，|\exlabel| と |\exref| という命令が新たに定義される．
+
+\subsection{ラベル命令}
+
+\subsubsection{機能と使い方}
+
+ラベル命令はラベルを付けるときに用いる．使い方は\LaTeX の |\label| 命令とまったく同様である．
+以下にラベル命令の例 |\exlabel| を用いるときの書式を示しておく．
+%
+\begin{syntax}
+|\exlabel{|\Meta{label}|}|
+\end{syntax}
+
+\subsubsection{内部処理}
+
+ラベル命令は最終的に次のような形に展開される．
+%
+\begin{syntax}
+|\label{|\Meta{ref name}|:|\Meta{scope num}|:|\Meta{label}|}|
+\end{syntax}
+
+ここで\Meta{scope num}はパッケージオプションとして指定した\Meta{scope}に依存して決定される
+アラビア数字とピリオドの組み合わせである．各指定\Meta{scope}ごとの具体的な形を以下に
+列挙する．
+%
+\begin{description}
+\item[|chapter|]
+``\Meta{chapter num}''
+
+\item[|section|]
+``\Meta{chapter num}.\Meta{section num}''または``\Meta{section num}''
+
+\item[|subsection|]
+``\Meta{chapter num}.\Meta{section num}.\Meta{subsection num}''または
+``\Meta{section num}.\Meta{subsection num}''
+\end{description}
+
+ただし\Meta{scope}が\texttt{global}に設定されている場合は次の形に展開される．
+%
+\begin{syntax}
+|\label{|\Meta{ref name}|:|\Meta{label}|}|
+\end{syntax}
+
+\subsection{参照命令}
+
+参照命令は対応するラベル命令によってラベル付けされた番号を，指定した書式で印字するための
+命令である．例として |\exref| の使い方を以下に示す．
+%
+\begin{syntax}
+|\exref[|\Meta{scope num}|]{|\Meta{label list}|}|
+\end{syntax}
+
+参照するラベルが同じスコープ内に存在する場合は\Meta{scope num}は省略可能である．特に
+\Meta{scope}が\texttt{global}に設定されている場合は常に省略可能であり，逆にオプション
+引数に値を指定しても無視されるだけである．
+
+また，引数にはカンマ区切りで複数の参照先ラベルを指定することが可能である．複数のラベルを指定
+した場合，デフォルトでは該当する番号がカンマ区切りで出力される．この出力書式は後述する
+参照書式変更命令 |\setrefstyle| を用いて柔軟にカスタマイズすることができる．
+
+\section{参照書式変更命令}
+
+|\setrefstyle| 命令を用いると，参照命令による出力を柔軟にカスタマイズすることができる．
+最初に |\setrefstyle| 命令の書式を示しておく．
+%
+\begin{syntax}
+|\setrefstyle{|\Meta{ref name}|}{|\Meta{options}|}|
+\end{syntax}
+
+これにより\Meta{ref name}に対応する参照命令が出力する内容の書式を変更できる．
+この |\setrefstyle| 命令はプリアンブルに限らず\LaTeX 文書ソース中全域で使用可能であり，
+設定の有効範囲は |{| や |}| によるブロックの制御を受ける．
+
+\Meta{options}には以下の内容をkey-valueリストで指定可能である：
+%
+\begin{description}[font=\normalfont]
+\item[|refcmd=|\Meta{command}]
+\Meta{label list}に与えたラベルの数だけ，指定した\Meta{command}が繰り返し実行・印字される．
+\Meta{command}中に記入された |#1| は適切に整形されたラベル名に置換される．
+規定値は |\ref{#1}|．
+%
+\item[|sep=|\Meta{command}]
+\Meta{label list}に3つ以上のラベルが記入されているときに，|refcmd| の各出力の間に印字
+する区切りの内容を指定する．ただし，最後の区切りは |last sep| に指定した値となる．
+規定値は |{,\space}|．
+%
+\item[|last sep|(|=|\Meta{command})]
+\Meta{label list}に複数のラベルが記入されている際に出力される，最後の区切りを指定する．
+|=| 以降を記入せず，単に |last sep| と指定した場合，最後の区切りには |sep| の値が適用される．
+規定値は値指定なし（つまり |sep| の値に従属）．
+%
+\item[|prefix=|\Meta{command}]
+参照命令を使用したとき，最初に実行・印字される内容を指定する．
+規定値は |{}|．
+%
+\item[|suffix=|\Meta{command}]
+参照命令を使用したとき，最後に実行・印字される内容を指定する．
+規定値は |{}|．
+\end{description}
+
+これらの設定は，明示的に指定したもの以外はそれ以前の設定がそのまま引き継がれる．
+
+
+
+
+\end{document}
