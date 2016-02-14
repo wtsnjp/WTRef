@@ -1,0 +1,159 @@
+\documentclass[a4paper]{article}
+
+% \usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{shortvrb}
+\MakeShortVerb{\|}
+\newcommand{\PkgName}{\textsf{WTRef}}
+\newcommand{\Meta}[1]{$\langle$\mbox{}\textit{#1}\mbox{}$\rangle$}
+\newenvironment{syntax}{\begin{quote}\small}{\end{quote}}
+
+\title{{\PkgName} Package (v0.1)}
+\author{Watson}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+WT series collects macros which author frequently use to create {\LaTeX} documents.
+{\PkgName} package is a part of this WT Series that extend {\LaTeX} original
+cross-reference system. It make enable to divide namespace and arrow users to customise
+reference format. {\LaTeXe} on any kind of {\TeX} engine is supported, but \textsf{xkeyval}
+package is required.
+\end{abstract}
+
+\section{Loading the {\PkgName} Package}
+
+To use {\PkgName} package, load \texttt{wtref.sty} file with |\usepackage| command in preamble.
+On this occasion, you can specify the scope of closs-reference commands as package option.
+%
+\begin{syntax}
+|\usepackage[|\Meta{scope}|]{wtref}|
+\end{syntax}
+
+You can choose from following four types for \Meta{scope}:
+%
+\begin{description}
+\item[|chapter|]
+Set the scope chapter-by-chapter. You can not use this option if |\chapter| is undefined
+(an error will be raised).
+
+\item[|section|]
+Set the scope section-by-section.
+
+\item[|subsection|]
+Set the scope subsection-by-subsection.
+
+\item[|global|]
+Do not set any scope (default).
+\end{description}
+
+When you omit package option, \Meta{scope} will set to |global|.
+
+\section{Cross-Reference Commands}
+
+\subsection{Definition of New Cross-Reference Commands}
+
+|\newref| command create a set of cross-reference commands.
+%
+\begin{syntax}
+|\newref{|\Meta{ref type}|}|
+\end{syntax}
+%
+This |\newref| command can only be used in preamble. In addition, all characters of
+\Meta{ref type} must be able to use in control sequence (only ordinary alphabet is recommended)
+and can not be empty.
+
+|\newref| command defines two commands: |\|\Meta{ref type}|label|, |\|\Meta{ref type}|ref|.
+In this documet, the formar are called \textbf{label commands} and the latter are called
+\textbf{reference commands}. |\newref| command overwrites existing commands, so \Meta{ref name}
+should be decided carefully.
+
+\subsubsection{Internal Processing}
+
+Label commands finaly are expanded to following format:
+%
+\begin{syntax}
+|\label{|\Meta{ref type}|:|\Meta{scope num}|:|\Meta{label}|}|
+\end{syntax}
+
+A \Meta{scope num} is string which composed by arabic numbers and periods.
+The format of \Meta{scope num} depends on \Meta{scope}:
+%
+\begin{description}
+\item[|chapter|]
+``\Meta{chapter num}''
+
+\item[|section|]
+``\Meta{chapter num}.\Meta{section num}'' or ``\Meta{section num}''
+
+\item[|subsection|]
+``\Meta{chapter num}.\Meta{section num}.\Meta{subsection num}'' or \\
+``\Meta{section num}.\Meta{subsection num}''
+\end{description}
+
+However, if \Meta{scope} is set to |global|, label command will be expanded to following form:
+%
+\begin{syntax}
+|\label{|\Meta{ref type}|:|\Meta{label}|}|
+\end{syntax}
+
+\subsection{Reference Commands}
+
+Reference commands print contents of counters which labeled by label commands in specified
+formats. Usage of |\exref| is shown bellow as an example:
+%
+\begin{syntax}
+|\exref[|\Meta{scope num}|]{|\Meta{label list}|}|
+\end{syntax}
+
+The option argument \Meta{scope num} can be ommited when refering label exists in the
+same scope. Especially, if \Meta{scope} is set to |global|, this argument is always
+unnecessary, and in other words it will be ignored all the time.
+
+In argument \Meta{label list}, plural labels can be written in comma-separated. If
+actually plural labels are filled in, pertinent counters should be printed out in
+comma-separated form in default. You can change this format flexiby with |\setrefstyle|
+command.
+
+\section{Setting Referece Style}
+
+The output format of reference commands can be customised with |\setrefstyle| command.
+The syntax of |\setrefstyle| is shown bellow:
+%
+\begin{syntax}
+|\setrefstyle{|\Meta{ref type}|}{|\Meta{options}|}|
+\end{syntax}
+
+The |\setrefstyle| command can be used any place of {\LaTeX} document (not only preamble),
+and change reference format locally.
+
+In \Meta{options}, you can set following parameters by key-value list:
+%
+\begin{description}[font=\normalfont]
+\item[|refcmd=|\Meta{command}]
+Specified \Meta{command} repeated for the number of labels which filled in \Meta{label list}
+time. String |#1| in \Meta{command} may be replaced into appropriate label name. The default
+value is |\ref{#1}|.
+%
+\item[|sep=|\Meta{command}]
+Specified \Meta{command} is output as a separater of each |refcmd| when more than three
+labels filled in \Meta{label list}. Notice that last one separater is given by |last sep|.
+The default value is |{,\space}|.
+%
+\item[|last sep|(|=|\Meta{command})]
+Specified \Meta{command} is output as a last separater when plura labels filled in
+\Meta{label list}. Behind the |=| can be ommited, and in that case |last sep| is set
+to identical value of |sep| (and this is the default).
+%
+\item[|prefix=|\Meta{command}]
+Specified \Meta{command} put out first when referece command used. The default value is |{}|.
+%
+\item[|suffix=|\Meta{command}]
+Specified \Meta{command} put out last when referece command used. The default value is |{}|.
+\end{description}
+
+Parameters which do not set explicitly will not be changed.
+
+\end{document}
