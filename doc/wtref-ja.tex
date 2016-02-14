@@ -4,11 +4,11 @@
 \usepackage{enumitem}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
+\newcommand{\PkgName}{\textsf{WTRef}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}\textit{#1}\mbox{}$\rangle$}
-\newcommand{\Note}{\par\noindent ※}
 \newenvironment{syntax}{\begin{quote}\small}{\end{quote}}
 
-\title{\textsf{WTRef}パッケージ (v0.1)}
+\title{\PkgName パッケージ (v0.1)}
 \author{ワトソン}
 
 \begin{document}
@@ -17,14 +17,15 @@
 
 \begin{abstract}
 WTシリーズは著者が\LaTeX 文書作成にあたってよく利用するマクロを集めたものである．
-\textsf{WTRef}パッケージはこのWTシリーズを構成するパッケージの1つであり，\LaTeX オリジナルの
-相互参照機能を拡張してスコープの指定と名前空間の分離，参照形式の柔軟な指定を可能にする．任意の
-\TeX エンジンと\LaTeXe の組み合わせで動作する．
+\PkgName パッケージはこのWTシリーズを構成するパッケージの1つであり，\LaTeX オリジナルの
+相互参照機能を拡張してスコープの指定と名前空間の分離，参照形式の柔軟な指定を可能にする．
+サポート対象は任意の\TeX エンジンと\LaTeXe の組み合わせで，動作には\textsf{xkeyval}
+パッケージが必要である．
 \end{abstract}
 
 \section{パッケージ読み込み}
 
-読み込みには |\usepackage| 命令を用いる．この際\textsf{WTRef}パッケージが管理する相互参照命令
+読み込みには |\usepackage| 命令を用いる．この際\PkgName パッケージが管理する相互参照命令
 （後述）によって使用されるラベルの有効範囲（スコープ）をオプションとして指定することができる．
 %
 \begin{syntax}
@@ -32,7 +33,7 @@ WTシリーズは著者が\LaTeX 文書作成にあたってよく利用する�
 \end{syntax}
 
 パッケージオプションの\Meta{scope}に指定できる値は以下の4つである．ただし，\Meta{scope}の
-指定を省略した場合は\texttt{global}が設定される．
+指定を省略した場合は |global| が設定される．
 %
 \begin{description}
 \item[|chapter|]
@@ -55,17 +56,17 @@ WTシリーズは著者が\LaTeX 文書作成にあたってよく利用する�
 |\newref| 命令を用いて相互参照に用いる2つの命令の組を新設することができる．
 %
 \begin{syntax}
-|\newref{|\Meta{ref name}|}|
+|\newref{|\Meta{ref type}|}|
 \end{syntax}
 %
-ただし，この |\newref| 命令はプリアンブルでしか使用できない．また\Meta{ref name}に使えるのは
+ただし，この |\newref| 命令はプリアンブルでしか使用できない．また\Meta{ref type}に使えるのは
 原則として制御綴に使用できる文字のみであり（半角英字のみにしておくことを推奨），空であっては
 ならない．
 
-|\newref| 命令は指定した\Meta{ref name}に応じて |\|\Meta{ref name}|label|，|\|\Meta{ref name}|ref| という
+|\newref| 命令は指定した\Meta{ref type}に応じて |\|\Meta{ref type}|label|，|\|\Meta{ref type}|ref| という
 形をもつ新しい2つの命令を定義する．ここで前者の命令を\textbf{ラベル命令}，後者の命令を
 \textbf{参照命令}と呼ぶことにする．|\newref| 命令は同名の命令が既に存在していても，その定義を
-上書きするので\Meta{ref name}は注意して選ぶ必要がある．
+上書きするので\Meta{ref type}は注意して選ぶ必要がある．
 
 %プリアンブル中で
 %%
@@ -91,7 +92,7 @@ WTシリーズは著者が\LaTeX 文書作成にあたってよく利用する�
 ラベル命令は最終的に次のような形に展開される．
 %
 \begin{syntax}
-|\label{|\Meta{ref name}|:|\Meta{scope num}|:|\Meta{label}|}|
+|\label{|\Meta{ref type}|:|\Meta{scope num}|:|\Meta{label}|}|
 \end{syntax}
 
 ここで\Meta{scope num}はパッケージオプションとして指定した\Meta{scope}に依存して決定される
@@ -110,10 +111,10 @@ WTシリーズは著者が\LaTeX 文書作成にあたってよく利用する�
 ``\Meta{section num}.\Meta{subsection num}''
 \end{description}
 
-ただし\Meta{scope}が\texttt{global}に設定されている場合は次の形に展開される．
+ただし\Meta{scope}が |global| に設定されている場合は次の形に展開される．
 %
 \begin{syntax}
-|\label{|\Meta{ref name}|:|\Meta{label}|}|
+|\label{|\Meta{ref type}|:|\Meta{label}|}|
 \end{syntax}
 
 \subsection{参照命令}
@@ -126,8 +127,8 @@ WTシリーズは著者が\LaTeX 文書作成にあたってよく利用する�
 \end{syntax}
 
 参照するラベルが同じスコープ内に存在する場合は\Meta{scope num}は省略可能である．特に
-\Meta{scope}が\texttt{global}に設定されている場合は常に省略可能であり，逆にオプション
-引数に値を指定しても無視されるだけである．
+\Meta{scope}が |global| に設定されている場合は常に省略可能であり，逆にオプション引数に
+値を指定しても無視されるだけである．
 
 また，引数にはカンマ区切りで複数の参照先ラベルを指定することが可能である．複数のラベルを指定
 した場合，デフォルトでは該当する番号がカンマ区切りで出力される．この出力書式は後述する
@@ -139,10 +140,10 @@ WTシリーズは著者が\LaTeX 文書作成にあたってよく利用する�
 最初に |\setrefstyle| 命令の書式を示しておく．
 %
 \begin{syntax}
-|\setrefstyle{|\Meta{ref name}|}{|\Meta{options}|}|
+|\setrefstyle{|\Meta{ref type}|}{|\Meta{options}|}|
 \end{syntax}
 
-これにより\Meta{ref name}に対応する参照命令が出力する内容の書式を変更できる．
+これにより\Meta{ref type}に対応する参照命令が出力する内容の書式を変更できる．
 この |\setrefstyle| 命令はプリアンブルに限らず\LaTeX 文書ソース中全域で使用可能であり，
 設定の有効範囲は |{| や |}| によるブロックの制御を受ける．
 

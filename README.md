@@ -6,14 +6,16 @@ WTRef package extend cross-reference system of LaTeX2e and introduce concepts of
 
 * TeX format: LaTeX2e
 * TeX engine: any engine
+* Prerequisite package: xkeyval
 
-## Notice
+## Installation
 
-All files in this package are under developing.
+Download the package from [release page](https://github.com/WatsonDNA/WTRef/releases) and
+put *.sty file wherever TeX can find.
 
 ## Documents
 
-Documents for this pacakge is in [doc directory](./doc) (Japanese).
+Documents for this pacakge are in [doc directory](./doc) ([English](./doc/wtref.pdf) and [Japanese](./doc/wtref-ja.pdf)).
 
 ## License
 
