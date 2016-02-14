@@ -71,7 +71,7 @@
     sep={,\space}, last sep,
     prefix={}, suffix={}}%
   % define label command
-  \wtrf@name@def{#1label}##1{\label{#1:\wtrf@scope ##1}}%
+  \wtrf@name@def{#1label}##1{\label{\wtrf@name@use{wtrf@#1@namespace}##1}}%
   % define ref command
   \wtrf@name@def{#1ref}{%
     \wtrf@if@option@exist
