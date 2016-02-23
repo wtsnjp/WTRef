@@ -26,46 +26,20 @@
     {\wtrf@error{No counter '#1' defined}}%
     {}}
 
-%%%% prepare 'the' commands
-\def\wtrf@thechapter{\arabic{chapter}}
-\@ifundefined{c@chapter}
-  {\def\wtrf@thesection{\arabic{section}}}
-  {\def\wtrf@thesection{\arabic{chapter}.\arabic{section}}}
-\@ifundefined{c@chapter}
-  {\def\wtrf@thesubsection{\arabic{section}.\arabic{subsection}}}
-  {\def\wtrf@thesubsection{\arabic{chapter}.\arabic{section}.\arabic{subsection}}}
-
-%%%% options
-% \DeclareOption{chapter}{%
-%   \@wtrf@use@scope@true
-%   \wtrf@check@counter{chapter}%
-%   \def\wtrf@thechapter{\arabic{chapter}}%
-%   \def\wtrf@scope{\wtrf@thechapter:}}
-% \DeclareOption{section}{%
-%   \@wtrf@use@scope@true
-%   \wtrf@check@counter{section}%
-%   \@ifundefined{c@chapter}%
-%     {\def\wtrf@thesection{\arabic{section}}}%
-%     {\def\wtrf@thesection{\arabic{chapter}.\arabic{section}}}%
-%   \def\wtrf@scope{\wtrf@thesection:}}
-% \DeclareOption{subsection}{%
-%   \@wtrf@use@scope@true
-%   \wtrf@check@counter{subsection}%
-%   \@ifundefined{c@chapter}%
-%     {\def\wtrf@thesubsection{\arabic{section}.\arabic{subsection}}}%
-%     {\def\wtrf@thesubsection{\arabic{chapter}.\arabic{section}.\arabic{subsection}}}%
-%   \def\wtrf@scope{\wtrf@thesubsection:}}
-% \DeclareOption{global}{\@wtrf@use@scope@false\let\wtrf@scope\@empty}
-% \ExecuteOptions{global}
-% \ProcessOptions\relax
-
 %%%% new ref
-\def\wtrf@new{new}
-\def\newref#1{%
-  \@ifundefined{wtrf@#1@namespace}%
-    {\wtrf@newref{#1}}%
-    {\wtrf@error{refname '#1' already exists}}}
+\def\newref{\wtrf@if@option@exist{\wtrf@set@namespace}{\wtrf@@newref}}
 \@onlypreamble\newref
+\def\wtrf@set@namespace[#1]{%
+  \setkeys[wtrf]{namespace}{#1}%
+  \wtrf@@newref}
+\def\wtrf@@newref#1{%
+  \@ifundefined{wtrf@#1@namespace}%
+    {\@for\wtrf@member:=#1\do{\wtrf@newref@pre{\wtrf@member}}}%
+    {\wtrf@error{refname '#1' already exists}}}
+\def\wtrf@newref@pre#1{%
+  \@ifundefined{wtrf@#1@namespace}%
+    {\wtrf@new{#1}}%
+    {\wtrf@error{refname '#1' already exists}}}
 \def\wtrf@newref#1{%
   % define namespace
   \wtrf@name@def{wtrf@#1@namespace}{#1:\wtrf@scope}%
