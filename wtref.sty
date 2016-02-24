@@ -25,17 +25,23 @@
   \@ifundefined{c@#1}%
     {\wtrf@error{No counter '#1' defined}}%
     {}}
+\def\wtrf@check@command#1{%
+  \@ifundefined{#1}%
+    {}%
+    {\wtrf@warn{Overwrite \string\#1}}}
+
+%%%% define keys for new ref
+\define@key[wtrf]{ns}{namespace}{}
+\define@key[wtrf]{ns}{scope}{\wtrf@check@counter{#1}}
 
 %%%% new ref
 \def\newref{\wtrf@if@option@exist{\wtrf@set@namespace}{\wtrf@@newref}}
 \@onlypreamble\newref
 \def\wtrf@set@namespace[#1]{%
-  \setkeys[wtrf]{namespace}{#1}%
+  \setkeys[wtrf]{ns}{#1}%
   \wtrf@@newref}
 \def\wtrf@@newref#1{%
-  \@ifundefined{wtrf@#1@namespace}%
-    {\@for\wtrf@member:=#1\do{\wtrf@newref@pre{\wtrf@member}}}%
-    {\wtrf@error{refname '#1' already exists}}}
+  \@for\wtrf@member:=#1\do{\wtrf@newref@pre{\wtrf@member}}}
 \def\wtrf@newref@pre#1{%
   \@ifundefined{wtrf@#1@namespace}%
     {\wtrf@new{#1}}%
@@ -54,8 +60,10 @@
     sep={,\space}, last sep,
     prefix={}, suffix={}}%
   % define label command
+  \wtrf@check@command{#1label}%
   \wtrf@name@def{#1label}##1{\label{\wtrf@name@use{wtrf@#1@namespace}##1}}%
   % define ref command
+  \wtrf@check@command{#1ref}%
   \wtrf@name@def{#1ref}{%
     \wtrf@if@option@exist
       {\wtrf@name@use{wtrf@#1ref@with@option}}%
