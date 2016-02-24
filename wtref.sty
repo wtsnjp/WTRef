@@ -12,8 +12,9 @@
 \def\wtrf@warn{\PackageWarningNoLine\wtrf@pkgname}
 \def\wtrf@error{\PackageError\wtrf@pkgname}
 
-%%%% new if and new counts
+%%%% new ifs and new counts
 \newif\if@wtrf@use@scope@
+\newif\if@wtrf@use@namespace@
 \newcount\wtrf@tempcnta
 \newcount\wtrf@tempcntb
 
@@ -21,6 +22,8 @@
 \def\wtrf@name@def#1{\expandafter\def\csname #1\endcsname}
 \def\wtrf@name@use#1{\csname #1\endcsname}
 \def\wtrf@if@option@exist{\@ifnextchar[}
+
+%%%% check commands
 \def\wtrf@check@counter#1{%
   \@ifundefined{c@#1}%
     {\wtrf@error{No counter '#1' defined}}%
@@ -31,13 +34,22 @@
     {\wtrf@warn{Overwrite \string\#1}}}
 
 %%%% define keys for new ref
-\define@key[wtrf]{ns}{namespace}{}
-\define@key[wtrf]{ns}{scope}{\wtrf@check@counter{#1}}
+\define@key[wtrf]{ns}{namespace}{%
+  \@wtrf@use@namespace@true
+  \def\wtrf@namespace@temp{#1}}
+\define@key[wtrf]{ns}{scope}{%
+  \wtrf@check@counter{#1}%
+  \@wtrf@use@scope@true
+  \def\wtrf@scope@temp{\csname the#1\endcsname}}
 
 %%%% new ref
 \def\newref{\wtrf@if@option@exist{\wtrf@set@namespace}{\wtrf@@newref}}
 \@onlypreamble\newref
 \def\wtrf@set@namespace[#1]{%
+  \@wtrf@use@namespace@false
+  \let\wtrf@namespace@temp\@empty
+  \@wtrf@use@scope@false
+  \let\wtrf@scope@temp\@empty
   \setkeys[wtrf]{ns}{#1}%
   \wtrf@@newref}
 \def\wtrf@@newref#1{%
@@ -45,7 +57,7 @@
 \def\wtrf@newref@pre#1{%
   \@ifundefined{wtrf@#1@namespace}%
     {\wtrf@new{#1}}%
-    {\wtrf@error{refname '#1' already exists}}}
+    {\wtrf@error{ref type '#1' already exists}}}
 \def\wtrf@newref#1{%
   % define namespace
   \wtrf@name@def{wtrf@#1@namespace}{#1:\wtrf@scope}%
