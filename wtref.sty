@@ -20,6 +20,7 @@
 
 %%%% utility
 \def\wtrf@name@def#1{\expandafter\def\csname #1\endcsname}
+\def\wtrf@name@edef#1{\expandafter\edef\csname #1\endcsname}
 \def\wtrf@name@use#1{\csname #1\endcsname}
 \def\wtrf@if@option@exist{\@ifnextchar[}
 
@@ -35,32 +36,49 @@
 
 %%%% define keys for new ref
 \define@key[wtrf]{ns}{namespace}{%
-  \@wtrf@use@namespace@true
   \def\wtrf@namespace@temp{#1}}
+\define@key[wtrf]{ns}{nonamespace}{%
+  \@wtrf@use@namespace@false}
 \define@key[wtrf]{ns}{scope}{%
   \wtrf@check@counter{#1}%
   \@wtrf@use@scope@true
-  \def\wtrf@scope@temp{\csname the#1\endcsname}}
+  \def\wtrf@scope@temp{#1}}
 
 %%%% new ref
-\def\newref{\wtrf@if@option@exist{\wtrf@set@namespace}{\wtrf@@newref}}
+\def\newref{%
+  \@wtrf@use@namespace@true
+  \@wtrf@use@scope@false
+  \wtrf@if@option@exist
+    {\wtrf@set@namespace}%
+    {\wtrf@@newref}}
 \@onlypreamble\newref
 \def\wtrf@set@namespace[#1]{%
-  \@wtrf@use@namespace@false
   \let\wtrf@namespace@temp\@empty
-  \@wtrf@use@scope@false
-  \let\wtrf@scope@temp\@empty
   \setkeys[wtrf]{ns}{#1}%
   \wtrf@@newref}
 \def\wtrf@@newref#1{%
   \@for\wtrf@member:=#1\do{\wtrf@newref@pre{\wtrf@member}}}
 \def\wtrf@newref@pre#1{%
   \@ifundefined{wtrf@#1@namespace}%
-    {\wtrf@new{#1}}%
+    {\wtrf@newref{#1}}%
     {\wtrf@error{ref type '#1' already exists}}}
 \def\wtrf@newref#1{%
   % define namespace
-  \wtrf@name@def{wtrf@#1@namespace}{#1:\wtrf@scope}%
+  \if@wtrf@use@namespace@
+    \ifx\wtrf@namespace@temp\@empty
+      \def\wtrf@namespace@temp{#1}
+    \fi
+    \wtrf@name@edef{wtrf@#1@namespace}{\wtrf@namespace@temp:}%
+  \else
+    \wtrf@name@def{wtrf@#1@namespace}{}%
+  \fi
+  % define scope
+  \if@wtrf@use@scope@
+    \wtrf@name@edef{wtrf@#1@scope@cmd}{the\wtrf@scope@temp}%
+    \wtrf@name@def{wtrf@#1@scope}{\csname\wtrf@name@use{wtrf@#1@scope@cmd}\endcsname:}%
+  \else
+    \wtrf@name@def{wtrf@#1@scope}{}%
+  \fi
   % define keys for setting styles
   \define@key[wtrf]{#1@style}{refcmd}{\wtrf@name@def{wtrf@#1@refcmd}####1{##1}}%
   \define@key[wtrf]{#1@style}{last sep}[\wtrf@name@use{wtrf@#1@sep}]{%
@@ -73,37 +91,40 @@
     prefix={}, suffix={}}%
   % define label command
   \wtrf@check@command{#1label}%
-  \wtrf@name@def{#1label}##1{\label{\wtrf@name@use{wtrf@#1@namespace}##1}}%
+  \wtrf@name@def{#1label}##1{%
+    \label{\wtrf@name@use{wtrf@#1@namespace}\wtrf@name@use{wtrf@#1@scope}##1}}%
   % define ref command
   \wtrf@check@command{#1ref}%
   \wtrf@name@def{#1ref}{%
     \wtrf@if@option@exist
       {\wtrf@name@use{wtrf@#1ref@with@option}}%
-      {\wtrf@name@use{wtrf@#1@print}}}%
+      {\def\wtrf@scope{\wtrf@name@use{wtrf@#1@scope}}\wtrf@name@use{wtrf@#1@print}}}%
   % when option exist
-  \wtrf@name@def{wtrf@#1ref@with@option}[##1]##2{%
-    \begingroup
-    \if@wtrf@use@scope@
+  \if@wtrf@use@scope@
+    \wtrf@name@def{wtrf@#1ref@with@option}[##1]##2{%
       \def\wtrf@scope{##1:}%
-    \else
+      \wtrf@name@use{wtrf@#1@print}{##2}}%
+  \else
+    \wtrf@name@def{wtrf@#1ref@with@option}[##1]##2{%
       \let\wtrf@scope\@empty
-    \fi
-    \wtrf@name@use{wtrf@#1@print}{##2}%
-    \endgroup}%
+      \wtrf@name@use{wtrf@#1@print}{##2}}%
+  \fi
   % print refs
   \wtrf@name@def{wtrf@#1@print}##1{%
     \wtrf@tempcnta\z@
     \@for\wtrf@member:=##1\do{\advance\wtrf@tempcnta\@ne}%
     \ifnum\wtrf@tempcnta<\tw@
       \wtrf@name@use{wtrf@#1@prefix}%
-      \wtrf@name@use{wtrf@#1@refcmd}{\wtrf@name@use{wtrf@#1@namespace}##1}%
+      \wtrf@name@use{wtrf@#1@refcmd}{%
+        \wtrf@name@use{wtrf@#1@namespace}\wtrf@scope##1}%
       \wtrf@name@use{wtrf@#1@suffix}%
     \else
       \wtrf@tempcntb\@ne
       \advance\wtrf@tempcnta\m@ne
       \wtrf@name@use{wtrf@#1@prefix}%
       \@for\wtrf@member:=##1\do{%
-        \wtrf@name@use{wtrf@#1@refcmd}{\wtrf@name@use{wtrf@#1@namespace}\wtrf@member}%
+        \wtrf@name@use{wtrf@#1@refcmd}{%
+          \wtrf@name@use{wtrf@#1@namespace}\wtrf@scope\wtrf@member}%
         \ifnum\wtrf@tempcnta>\wtrf@tempcntb
           \wtrf@name@use{wtrf@#1@sep}%
         \else\ifnum\wtrf@tempcnta=\wtrf@tempcntb
