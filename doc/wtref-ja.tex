@@ -8,7 +8,7 @@
 \newcommand{\Meta}[1]{$\langle$\mbox{}\textit{#1}\mbox{}$\rangle$}
 \newenvironment{syntax}{\begin{quote}\small}{\end{quote}}
 
-\title{\PkgName パッケージ (v0.1)}
+\title{\PkgName パッケージ (v0.2)}
 \author{ワトソン}
 
 \begin{document}
@@ -23,58 +23,71 @@ WTシリーズは著者が\LaTeX 文書作成にあたってよく利用する�
 パッケージが必要である．
 \end{abstract}
 
+\section{動作要件}
+
+WTRefパッケージの動作要件は以下の通りである．
+%
+\begin{itemize}
+\item \TeX エンジン：任意
+\item \TeX フォーマット：\LaTeXe
+\item ドキュメントクラス：任意
+\item 依存パッケージ：\textsf{xkeyval}
+\end{itemize}
+
 \section{パッケージ読み込み}
 
-読み込みには |\usepackage| 命令を用いる．この際\PkgName パッケージが管理する相互参照命令
-（後述）によって使用されるラベルの有効範囲（スコープ）をオプションとして指定することができる．
+読み込みには |\usepackage| 命令を用いる．オプションは存在しない．
 %
 \begin{syntax}
-|\usepackage[|\Meta{scope}|]{wtref}|
+|\usepackage{wtref}|
 \end{syntax}
-
-パッケージオプションの\Meta{scope}に指定できる値は以下の4つである．ただし，\Meta{scope}の
-指定を省略した場合は |global| が設定される．
-%
-\begin{description}
-\item[|chapter|]
-スコープを章単位に設定する．|\chapter| 命令の存在しない環境で指定するとエラーになる．
-
-\item[|section|]
-スコープを節単位に設定する．
-
-\item[|subsection|]
-スコープを小節単位に設定する．
-
-\item[|global|]
-スコープを設定しない（デフォルト）．
-\end{description}
 
 \section{相互参照命令}
 
 \subsection{相互参照命令の新設}
 
-|\newref| 命令を用いて相互参照に用いる2つの命令の組を新設することができる．
+|\newref| 命令を用いて相互参照に用いる2つの命令を新設することができる．この命令は
+プリアンブルでのみ使用可能である．
 %
 \begin{syntax}
-|\newref{|\Meta{ref type}|}|
+|\newref[|\Meta{options}|]{|\Meta{ref types}|}|
 \end{syntax}
+
+上記書式中の\Meta{ref types}は\Meta{ref type}のカンマ区切りリストである．\Meta{ref type}は
+制御綴に使用できる文字のみで構成された文字列で（半角英字のみにしておくことを推奨），空で
+あってはならない．なお\Meta{ref types}に与えるリストは，key-valueリストとは異なりカンマ
+前後の空白も無視されないので注意が必要である．
+
+|\newref| 命令は指定した\Meta{ref type}に応じて |\|\Meta{ref type}|label|，
+|\|\Meta{ref type}|ref| という形をもつ，新しい2つの命令を定義する．ここで前者の命令を
+\textbf{ラベル命令}，後者の命令を\textbf{参照命令}と呼ぶことにする．|\newref| 命令は同名の
+命令が既に存在していても，その定義を上書きするので\Meta{ref type}は注意して選ぶ必要がある．
+
+また，\Meta{options}には以下の内容をkey-valueリストで指定可能である：
 %
-ただし，この |\newref| 命令はプリアンブルでしか使用できない．また\Meta{ref type}に使えるのは
-原則として制御綴に使用できる文字のみであり（半角英字のみにしておくことを推奨），空であっては
-ならない．
+\begin{description}[font=\normalfont]
+%
+\item[|namespace=|\Meta{string}]
+与えられた値を用いて\Meta{namespace}を``\Meta{string}|:|''に設定する．|namespace|キーも
+|nonamespace|キーも指定しない場合，および|namespace|に与えた\Meta{string}が空文字列であった
+場合\Meta{namespace}は``\Meta{ref type}|:|''に設定される．
+%
+\item[|nonamespace|]
+このキーを指定すると，\Meta{namespace}は空となる．すなわち，名前空間機能を無効化できる．
+なお，|nonamespace|キーに値を指定してもエラーにはならないが，単に無視される．
+%
+\item[|scope=|\Meta{counter}]
+スコープとして利用するカウンタを指定する．\Meta{counter}には任意の\LaTeX カウンタを指定する
+ことが可能だが，文書内で一意性のあるカウンタを指定することが望ましい．これにより\Meta{scope}は
+``|\the|\Meta{counter}|:|''の形に設定される．
+\end{description}
+%
+これらの設定は，\Meta{ref types}で指定したすべての\Meta{ref type}に対応する相互参照命令に
+ついて適用される．
 
-|\newref| 命令は指定した\Meta{ref type}に応じて |\|\Meta{ref type}|label|，|\|\Meta{ref type}|ref| という
-形をもつ新しい2つの命令を定義する．ここで前者の命令を\textbf{ラベル命令}，後者の命令を
-\textbf{参照命令}と呼ぶことにする．|\newref| 命令は同名の命令が既に存在していても，その定義を
-上書きするので\Meta{ref type}は注意して選ぶ必要がある．
-
-%プリアンブル中で
-%%
-%\begin{syntax}
-%|\newref{ex}|
-%\end{syntax}
-%%
-%のように宣言を行うと，|\exlabel| と |\exref| という命令が新たに定義される．
+ここで\Meta{options}に何も指定しない場合\Meta{namespace}は\Meta{ref type}が転用されて
+``\Meta{ref type}|:|''の形となり\Meta{scope}は空に設定される．言い換えると，デフォルトでは
+名前空間機能が有効，スコープ機能は無効に設定されている．
 
 \subsection{ラベル命令}
 
@@ -92,29 +105,7 @@ WTシリーズは著者が\LaTeX 文書作成にあたってよく利用する�
 ラベル命令は最終的に次のような形に展開される．
 %
 \begin{syntax}
-|\label{|\Meta{ref type}|:|\Meta{scope num}|:|\Meta{label}|}|
-\end{syntax}
-
-ここで\Meta{scope num}はパッケージオプションとして指定した\Meta{scope}に依存して決定される
-アラビア数字とピリオドの組み合わせである．各指定\Meta{scope}ごとの具体的な形を以下に
-列挙する．
-%
-\begin{description}
-\item[|chapter|]
-``\Meta{chapter num}''
-
-\item[|section|]
-``\Meta{chapter num}.\Meta{section num}''または``\Meta{section num}''
-
-\item[|subsection|]
-``\Meta{chapter num}.\Meta{section num}.\Meta{subsection num}''または
-``\Meta{section num}.\Meta{subsection num}''
-\end{description}
-
-ただし\Meta{scope}が |global| に設定されている場合は次の形に展開される．
-%
-\begin{syntax}
-|\label{|\Meta{ref type}|:|\Meta{label}|}|
+|\label{|\Meta{namespace}\Meta{scope}\Meta{label}|}|
 \end{syntax}
 
 \subsection{参照命令}
@@ -123,16 +114,19 @@ WTシリーズは著者が\LaTeX 文書作成にあたってよく利用する�
 命令である．例として |\exref| の使い方を以下に示す．
 %
 \begin{syntax}
-|\exref[|\Meta{scope num}|]{|\Meta{label list}|}|
+|\exref[|\Meta{the scope}|]{|\Meta{label list}|}|
 \end{syntax}
 
-参照するラベルが同じスコープ内に存在する場合は\Meta{scope num}は省略可能である．特に
-\Meta{scope}が |global| に設定されている場合は常に省略可能であり，逆にオプション引数に
-値を指定しても無視されるだけである．
+参照するラベルが同じスコープ内に存在する場合は\Meta{the scope}は省略可能である．
+\Meta{the scope}に参照先のスコープに対応する``|\the|\Meta{counter}''の出力を直接記入することで
+スコープの範囲外からラベルを参照することが可能である．なお，スコープ機能が無効
+（|\newref| によって相互参照命令を定義する際に\Meta{options}で |scope| キーを指定しなかった
+場合）のときは，\Meta{the scope}は常に無視される．
 
-また，引数にはカンマ区切りで複数の参照先ラベルを指定することが可能である．複数のラベルを指定
-した場合，デフォルトでは該当する番号がカンマ区切りで出力される．この出力書式は後述する
-参照書式変更命令 |\setrefstyle| を用いて柔軟にカスタマイズすることができる．
+また，引数にはカンマ区切りで複数の参照先ラベルを指定することが可能である．\Meta{label list}
+に与えるリストは，key-valueリストとは異なりカンマ前後の空白も無視されないので注意が必要である．
+複数のラベルを指定した場合，デフォルトでは該当する番号がカンマ区切りで出力される．この出力書式
+は後述する参照書式変更命令 |\setrefstyle| を用いて柔軟にカスタマイズすることができる．
 
 \section{参照書式変更命令}
 
@@ -173,10 +167,7 @@ WTシリーズは著者が\LaTeX 文書作成にあたってよく利用する�
 参照命令を使用したとき，最後に実行・印字される内容を指定する．
 規定値は |{}|．
 \end{description}
-
+%
 これらの設定は，明示的に指定したもの以外はそれ以前の設定がそのまま引き継がれる．
-
-
-
 
 \end{document}
