@@ -23,6 +23,7 @@
 \def\wtrf@name@edef#1{\expandafter\edef\csname #1\endcsname}
 \def\wtrf@name@use#1{\csname #1\endcsname}
 \def\wtrf@if@option@exist{\@ifnextchar[}
+\def\wtrf@if@reftype@exist#1{\@ifundefined{wtrf@#1@namespace}}
 
 %%%% check commands
 \def\wtrf@check@counter#1{%
@@ -60,7 +61,7 @@
   \@for\wtrf@member:=#1\do{%
     \expandafter\wtrf@newref@pre\expandafter{\wtrf@member}}}
 \def\wtrf@newref@pre#1{%
-  \@ifundefined{wtrf@#1@namespace}
+  \wtrf@if@reftype@exist{#1}%
     {\wtrf@newref{#1}}
     {\wtrf@error{ref type '#1' already exists}}}
 \def\wtrf@newref#1{%
@@ -137,7 +138,7 @@
 
 %%%% set ref style
 \def\setrefstyle#1#2{%
-  \@ifundefined{wtrf@#1@namespace}
+  \wtrf@if@reftype@exist{#1}%
     {\wtrf@error{ref type '#1' does not exist}}
     {\setkeys[wtrf]{#1@style}{#2}}}
 
