@@ -36,6 +36,7 @@ System requirements of {\PkgName} are shown bellow:
 \section{Loading the {\PkgName} Package}
 
 To use {\PkgName} package, load \texttt{wtref.sty} file with |\usepackage| command in preamble.
+No package option is available.
 %
 \begin{syntax}
 |\usepackage{wtref}|
@@ -49,7 +50,7 @@ To use {\PkgName} package, load \texttt{wtref.sty} file with |\usepackage| comma
 in preamble.
 %
 \begin{syntax}
-|\newref{|\Meta{ref types}|}|
+|\newref[|\Meta{options}|]{|\Meta{ref types}|}|
 \end{syntax}
 %
 \Meta{ref types} are comma-separated list of \Meta{ref type}. All characters of \Meta{ref type}
@@ -162,7 +163,7 @@ Specified \Meta{command} put out first when referece command used. The default v
 \item[|suffix=|\Meta{command}]
 Specified \Meta{command} put out last when referece command used. The default value is |{}|.
 \end{description}
-
+%
 Parameters which do not set explicitly will not be changed.
 
 \end{document}
