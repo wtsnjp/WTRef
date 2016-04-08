@@ -71,6 +71,7 @@
   % define namespace
   \if@wtrf@use@namespace@
     \ifx\wtrf@namespace@temp\@empty
+      \@wtrf@set@namespace@false
       \def\wtrf@namespace@temp{#1}%
     \fi
     \wtrf@name@edef{wtrf@#1@namespace}{\wtrf@namespace@temp:}%
