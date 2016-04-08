@@ -15,6 +15,7 @@
 %%%% new ifs and new counts
 \newif\if@wtrf@use@scope@
 \newif\if@wtrf@use@namespace@
+\newif\if@wtrf@set@namespace@
 \newcount\wtrf@tempcnta
 \newcount\wtrf@tempcntb
 
@@ -23,7 +24,7 @@
 \def\wtrf@name@edef#1{\expandafter\edef\csname #1\endcsname}
 \def\wtrf@name@use#1{\csname #1\endcsname}
 \def\wtrf@if@option@exist{\@ifnextchar[}
-\def\wtrf@if@reftype@exist#1{\@ifundefined{wtrf@#1@namespace}}
+\def\wtrf@if@reftype@not@exist#1{\@ifundefined{wtrf@#1@namespace}}
 
 %%%% check commands
 \def\wtrf@check@counter#1{%
@@ -37,6 +38,7 @@
 
 %%%% define keys for new ref
 \define@key[wtrf]{ns}{namespace}{%
+  \@wtrf@set@namespace@true
   \def\wtrf@namespace@temp{#1}}
 \define@key[wtrf]{ns}{nonamespace}[\@empty]{%
   \@wtrf@use@namespace@false}
@@ -49,6 +51,7 @@
 \def\newref{%
   \let\wtrf@namespace@temp\@empty
   \@wtrf@use@namespace@true
+  \@wtrf@set@namespace@false
   \@wtrf@use@scope@false
   \wtrf@if@option@exist
     {\wtrf@set@namespace}
@@ -61,7 +64,7 @@
   \@for\wtrf@member:=#1\do{%
     \expandafter\wtrf@newref@pre\expandafter{\wtrf@member}}}
 \def\wtrf@newref@pre#1{%
-  \wtrf@if@reftype@exist{#1}%
+  \wtrf@if@reftype@not@exist{#1}%
     {\wtrf@newref{#1}}
     {\wtrf@error{ref type '#1' already exists}}}
 \def\wtrf@newref#1{%
@@ -134,11 +137,15 @@
         \fi\fi
         \advance\wtrf@tempcntb\@ne}%
       \wtrf@name@use{wtrf@#1@suffix}%
-    \fi}}
+    \fi}%
+  % reset \wtrf@namespace@temp
+  \if@wtrf@set@namespace@\else
+    \let\wtrf@namespace@temp\@empty
+  \fi}
 
 %%%% set ref style
 \def\setrefstyle#1#2{%
-  \wtrf@if@reftype@exist{#1}%
+  \wtrf@if@reftype@not@exist{#1}%
     {\wtrf@error{ref type '#1' does not exist}}
     {\setkeys[wtrf]{#1@style}{#2}}}
 
