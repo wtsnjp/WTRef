@@ -97,11 +97,13 @@
     prefix={}, suffix={}}%
   % define label command
   \wtrf@check@command{#1label}%
-  \wtrf@name@def{#1label}##1{%
+  \wtrf@name@def{#1label}{\protect\wtrf@name@use{wtrf@#1label}}
+  \wtrf@name@def{wtrf@#1label}##1{%
     \label{\wtrf@name@use{wtrf@#1@namespace}\wtrf@name@use{wtrf@#1@scope}##1}}%
   % define ref command
   \wtrf@check@command{#1ref}%
-  \wtrf@name@def{#1ref}{%
+  \wtrf@name@def{#1ref}{\protect\wtrf@name@use{wtrf@#1ref}}
+  \wtrf@name@def{wtrf@#1ref}{%
     \wtrf@if@option@exist
       {\wtrf@name@use{wtrf@#1ref@with@option}}
       {\def\wtrf@scope{\wtrf@name@use{wtrf@#1@scope}}\wtrf@name@use{wtrf@#1@print}}}%
