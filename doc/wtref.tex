@@ -7,7 +7,7 @@
 \newcommand{\Meta}[1]{$\langle$\mbox{}\textit{#1}\mbox{}$\rangle$}
 \newenvironment{syntax}{\begin{quote}\small}{\end{quote}}
 
-\title{{\PkgName} Package (v0.2.1)}
+\title{{\PkgName} Package (v0.3)}
 \author{Watson}
 
 \begin{document}
@@ -55,7 +55,7 @@ in preamble.
 %
 \Meta{ref types} are comma-separated list of \Meta{ref type}. All characters of \Meta{ref type}
 must be able to use in control sequence (only ordinary alphabet is recommended) and can not be
-empty. Notice that spaces around commas are not ignored unlike key-value lists.
+empty. Notice that leading and trailing spaces and successive spaces arround commas are ignored.
 
 |\newref| command defines two commands: |\|\Meta{ref type}|label|, |\|\Meta{ref type}|ref|.
 In this document, the formar are called \textbf{label commands} and the latter are called
@@ -123,9 +123,9 @@ same scope. You can refer outside of scope by writing down the output of proper
 is always unnecessary, and in other words it will be ignored all the time.
 
 In argument \Meta{label list}, plural labels can be written in comma-separated. Note that
-spaces around commas are not ignored unlike key-value lists. If actually plural labels are
-filled in, pertinent counters should be printed out in comma-separated form in default.
-You can change this format flexibly with |\setrefstyle| command.
+leading and trailing spaces and successive spaces arround commas are ignored. If actually
+plural labels are filled in, pertinent counters should be printed out in comma-separate
+form in default. You can change this format flexibly with |\setrefstyle| command.
 
 \section{Setting Referece Style}
 
@@ -133,7 +133,7 @@ The output format of reference commands can be customised with |\setrefstyle| co
 The syntax of |\setrefstyle| is shown bellow:
 %
 \begin{syntax}
-|\setrefstyle{|\Meta{ref type}|}{|\Meta{options}|}|
+|\setrefstyle{|\Meta{ref types}|}{|\Meta{options}|}|
 \end{syntax}
 
 The |\setrefstyle| command can be used any place of {\LaTeX} document (not only preamble),
