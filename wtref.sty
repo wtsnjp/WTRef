@@ -37,8 +37,9 @@
     {\wtrf@warn{Overwrite definition of #1}}}
 
 %%%% trimming spaces
-\define@key[wtrf]{rn}{ref name}{\def\wtrf@ref@name{#1}}
-\def\wtrf@set@ref@name#1{\setkeys[wtrf]{rn}{ref name=#1}}
+\define@cmdkeys[wtrf]{ts}[wtrf@temp@]{ref@name, label}
+\def\wtrf@set@ref@name#1{\setkeys[wtrf]{ts}{ref@name=#1}}
+\def\wtrf@set@label#1{\setkeys[wtrf]{ts}{label=#1}}
 
 %%%% define keys for new ref
 \define@key[wtrf]{ns}{namespace}{%
@@ -67,7 +68,7 @@
 \def\wtrf@@newref#1{%
   \@for\wtrf@member:=#1\do{%
     \expandafter\wtrf@set@ref@name\expandafter{\wtrf@member}%
-    \expandafter\wtrf@newref@pre\expandafter{\wtrf@ref@name}}}
+    \expandafter\wtrf@newref@pre\expandafter{\wtrf@temp@ref@name}}}
 \def\wtrf@newref@pre#1{%
   \wtrf@if@reftype@not@exist{#1}%
     {\wtrf@newref{#1}}
@@ -136,8 +137,9 @@
       \advance\wtrf@tempcnta\m@ne
       \wtrf@name@use{wtrf@#1@prefix}%
       \@for\wtrf@member:=##1\do{%
+        \expandafter\wtrf@set@label\expandafter{\wtrf@member}%
         \wtrf@name@use{wtrf@#1@refcmd}{%
-          \wtrf@name@use{wtrf@#1@namespace}\wtrf@scope\wtrf@member}%
+          \wtrf@name@use{wtrf@#1@namespace}\wtrf@scope\wtrf@temp@label}%
         \ifnum\wtrf@tempcnta>\wtrf@tempcntb
           \wtrf@name@use{wtrf@#1@sep}%
         \else\ifnum\wtrf@tempcnta=\wtrf@tempcntb
@@ -155,7 +157,7 @@
 \def\setrefstyle#1#2{%
   \@for\wtrf@member:=#1\do{%
     \expandafter\wtrf@set@ref@name\expandafter{\wtrf@member}%
-    \expandafter\wtrf@setrefstyle\expandafter{\wtrf@ref@name}{#2}}}
+    \expandafter\wtrf@setrefstyle\expandafter{\wtrf@temp@ref@name}{#2}}}
 \def\wtrf@setrefstyle#1#2{%
   \wtrf@if@reftype@not@exist{#1}%
     {\wtrf@error{ref type '#1' does not exist}}
