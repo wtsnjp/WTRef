@@ -8,7 +8,7 @@
 \newcommand{\Meta}[1]{$\langle$\mbox{}\textit{#1}\mbox{}$\rangle$}
 \newenvironment{syntax}{\begin{quote}\small}{\end{quote}}
 
-\title{\PkgName パッケージ (v0.2.1)}
+\title{\PkgName パッケージ (v0.3)}
 \author{ワトソン}
 
 \begin{document}
@@ -55,8 +55,8 @@ WTシリーズは著者が\LaTeX 文書作成にあたってよく利用する�
 
 上記書式中の\Meta{ref types}は\Meta{ref type}のカンマ区切りリストである．\Meta{ref type}は
 制御綴に使用できる文字のみで構成された文字列で（半角英字のみにしておくことを推奨），空で
-あってはならない．なお\Meta{ref types}に与えるリストは，key-valueリストとは異なりカンマ
-前後の空白も無視されないので注意が必要である．
+あってはならない．なお\Meta{ref types}の先頭・末尾およびカンマ前後の連続する空白は
+すべて無視される．
 
 |\newref| 命令は指定した\Meta{ref type}に応じて |\|\Meta{ref type}|label|，
 |\|\Meta{ref type}|ref| という形をもつ，新しい2つの命令を定義する．ここで前者の命令を
@@ -123,8 +123,8 @@ WTシリーズは著者が\LaTeX 文書作成にあたってよく利用する�
 （|\newref| によって相互参照命令を定義する際に\Meta{options}で |scope| キーを指定しなかった
 場合）のときは，\Meta{the scope}は常に無視される．
 
-また，引数にはカンマ区切りで複数の参照先ラベルを指定することが可能である．\Meta{label list}
-に与えるリストは，key-valueリストとは異なりカンマ前後の空白も無視されないので注意が必要である．
+また，引数にはカンマ区切りで複数の参照先ラベルを指定することが可能である．
+\Meta{label list}の先頭・末尾およびカンマ前後の連続する空白はすべて無視される．
 複数のラベルを指定した場合，デフォルトでは該当する番号がカンマ区切りで出力される．この出力書式
 は後述する参照書式変更命令 |\setrefstyle| を用いて柔軟にカスタマイズすることができる．
 
@@ -134,12 +134,12 @@ WTシリーズは著者が\LaTeX 文書作成にあたってよく利用する�
 最初に |\setrefstyle| 命令の書式を示しておく．
 %
 \begin{syntax}
-|\setrefstyle{|\Meta{ref type}|}{|\Meta{options}|}|
+|\setrefstyle{|\Meta{ref types}|}{|\Meta{options}|}|
 \end{syntax}
 
-これにより\Meta{ref type}に対応する参照命令が出力する内容の書式を変更できる．
-この |\setrefstyle| 命令はプリアンブルに限らず\LaTeX 文書ソース中全域で使用可能であり，
-設定の有効範囲は |{| や |}| によるブロックの制御を受ける．
+これにより\Meta{ref types}中に含まれる\Meta{ref type}に対応する参照命令が出力する内容の
+書式を変更できる．この |\setrefstyle| 命令はプリアンブルに限らず\LaTeX 文書ソース中全域で
+使用可能であり，設定の有効範囲は |{| や |}| によるブロックの制御を受ける．
 
 \Meta{options}には以下の内容をkey-valueリストで指定可能である：
 %
