@@ -36,6 +36,10 @@
     {}
     {\wtrf@warn{Overwrite definition of #1}}}
 
+%%%% trimming spaces
+\define@key[wtrf]{rn}{ref name}{\def\wtrf@ref@name{#1}}
+\def\wtrf@set@ref@name#1{\setkeys[wtrf]{rn}{ref name=#1}}
+
 %%%% define keys for new ref
 \define@key[wtrf]{ns}{namespace}{%
   \@wtrf@set@namespace@true
@@ -62,7 +66,8 @@
   \wtrf@@newref}
 \def\wtrf@@newref#1{%
   \@for\wtrf@member:=#1\do{%
-    \expandafter\wtrf@newref@pre\expandafter{\wtrf@member}}}
+    \expandafter\wtrf@set@ref@name\expandafter{\wtrf@member}%
+    \expandafter\wtrf@newref@pre\expandafter{\wtrf@ref@name}}}
 \def\wtrf@newref@pre#1{%
   \wtrf@if@reftype@not@exist{#1}%
     {\wtrf@newref{#1}}
@@ -148,6 +153,10 @@
 
 %%%% set ref style
 \def\setrefstyle#1#2{%
+  \@for\wtrf@member:=#1\do{%
+    \expandafter\wtrf@set@ref@name\expandafter{\wtrf@member}%
+    \expandafter\wtrf@setrefstyle\expandafter{\wtrf@ref@name}{#2}}}
+\def\wtrf@setrefstyle#1#2{%
   \wtrf@if@reftype@not@exist{#1}%
     {\wtrf@error{ref type '#1' does not exist}}
     {\setkeys[wtrf]{#1@style}{#2}}}
