@@ -4,12 +4,12 @@
 
 %%%% package declaration
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{wtref}[2016/04/19 v0.3]
-\def\wtrf@pkgname{wtref}
+\ProvidesPackage{wtref}[2016/08/09 dev]
+\def\wtrf@pkgname{WTRef}
 \RequirePackage{xkeyval}
 
 %%%% error messages
-\def\wtrf@warn{\PackageWarningNoLine\wtrf@pkgname}
+\def\wtrf@info{\PackageInfo\wtrf@pkgname}
 \def\wtrf@error{\PackageError\wtrf@pkgname}
 
 %%%% new ifs and new counts
@@ -29,12 +29,12 @@
 %%%% check commands
 \def\wtrf@check@counter#1{%
   \@ifundefined{c@#1}
-    {\wtrf@error{No counter '#1' defined}}
+    {\wtrf@error{Undefined LaTeX counter '#1'}}
     {}}
 \def\wtrf@check@command#1{%
   \@ifundefined{#1}
     {}
-    {\wtrf@warn{Overwrite definition of #1}}}
+    {\wtrf@info{Redefining \expandafter\string\csname#1\endcsname}}}
 
 %%%% trimming spaces
 \define@cmdkeys[wtrf]{ts}[wtrf@temp@]{ref@name, label}
@@ -53,7 +53,7 @@
   \def\wtrf@scope@temp{#1}}
 
 %%%% new ref
-\def\newref{%
+\newcommand{\newref}{%
   \let\wtrf@namespace@temp\@empty
   \@wtrf@use@namespace@true
   \@wtrf@set@namespace@false
@@ -154,7 +154,7 @@
   \fi}
 
 %%%% set ref style
-\def\setrefstyle#1#2{%
+\newcommand{\setrefstyle}[2]{%
   \@for\wtrf@member:=#1\do{%
     \expandafter\wtrf@set@ref@name\expandafter{\wtrf@member}%
     \expandafter\wtrf@setrefstyle\expandafter{\wtrf@temp@ref@name}{#2}}}
