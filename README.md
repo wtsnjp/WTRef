@@ -21,3 +21,7 @@ Documents for this pacakge are in [doc directory](./doc) ([English](./doc/wtref.
 ## License
 
 This package released under [the MIT license](./LICENSE).
+
+---
+
+Takuto ASAKURA ([wtsnjp](https://twitter.com/wtsnjp))
