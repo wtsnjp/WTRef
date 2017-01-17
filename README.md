@@ -11,12 +11,11 @@ WTRef package extend cross-reference system of LaTeX2e and introduce concepts of
 
 ## Installation
 
-Download the package from [release page](https://github.com/WatsonDNA/WTRef/releases) and
-put *.sty file wherever TeX can find.
+Move wtref.sty file to $TEXMF/tex/la­tex/wtref.
 
 ## Documents
 
-Documents for this pacakge are in [doc directory](./doc) ([English](./doc/wtref.pdf) and [Japanese](./doc/wtref-ja.pdf)).
+Documents for this pacakge are available in [English](http://mirrors.ctan.org/macros/latex/contrib/wtref/wtref.pdf) and [Japanese](http://mirrors.ctan.org/macros/latex/contrib/wtref/wtref-ja.pdf).
 
 ## License
 
