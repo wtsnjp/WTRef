@@ -1,4 +1,4 @@
-# WTRef Package (v0.3.1)
+# WTRef Package (v0.3.2)
 
 WTRef package extend cross-reference system of LaTeX2e and introduce concepts of namespace and scope. This package is a part of the WT Series.
 
