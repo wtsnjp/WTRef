@@ -1,6 +1,12 @@
-%
-% wtref.sty
-%
+%%
+%% This is file `wtref.sty'.
+%%
+%% Copyright (c) 2016-2017 Takuto ASAKURA (wtsnjp)
+%%   GitHub:   https://github.com/wtsnjp
+%%   Twitter:  @wtsnjp
+%%
+%% This package is distributed under the MIT License.
+%%
 
 % Package declaration
 \NeedsTeXFormat{LaTeX2e}
@@ -31,12 +37,12 @@
 \def\wtrf@check@counter#1{%
   \@ifundefined{c@#1}{%
     \wtrf@error
-      {Undefined LaTeX counter '#1'}
+      {Undefined LaTeX counter `#1'}
       {Check the spelling or declare new LaTeX counter}%
   }{}}
 \def\wtrf@check@command#1{%
   \@ifundefined{#1}{}{% else
-    \wtrf@warn{Redefining \expandafter\string\csname#1\endcsname}}}
+    \wtrf@warn{Redefining \expandafter\string\csname #1\endcsname}}}
 
 % Trimming spaces
 \def\wtrf@inner@setkeys#1{\setkeys[wtrf]{inner}{key=#1}}
@@ -78,7 +84,7 @@
     \wtrf@newref{#1}%
   }{% else
     \wtrf@error
-      {ref type '#1' already exists}
+      {ref type `#1' already exists}
       {You can declare ref type only once}%
   }}
 \def\wtrf@newref#1{%
@@ -169,11 +175,13 @@
 \def\wtrf@setrefstyle#1#2{%
   \wtrf@if@reftype@not@exists{#1}{%
     \wtrf@error
-      {ref type '#1' does not exist}
+      {ref type `#1' does not exist}
       {You can declare ref type only once}%
   }{% else
     \setkeys[wtrf]{#1-style}{#2}%
   }}
 
-% EOF
+% All done
 \endinput
+
+%% EOF
