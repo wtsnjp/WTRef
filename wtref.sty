@@ -171,7 +171,7 @@
   \wtrf@if@reftype@not@exists{#1}{%
     \wtrf@error
       {ref type `#1' does not exist}
-      {You can declare ref type only once}%
+      {Declare ref type before using it}%
   }{% else
     \setkeys[wtrf]{#1-style}{#2}%
   }}
