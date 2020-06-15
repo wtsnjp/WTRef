@@ -1,7 +1,7 @@
 %%
 %% This is file `wtref.sty'.
 %%
-%% Copyright (c) 2016-2017 Takuto ASAKURA (wtsnjp)
+%% Copyright 2016-2020 Takuto ASAKURA (wtsnjp)
 %%   GitHub:   https://github.com/wtsnjp
 %%   Twitter:  @wtsnjp
 %%
@@ -10,9 +10,10 @@
 
 % Package declaration
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{wtref}[2017/01/17 v0.3.2 Extend cross-reference system]
+\ProvidesPackage{wtref}
+  [2020/06/15 v0.4.0 A small extention for LaTeX2e's cross-referencing]
 \def\wtrf@pkgname{WTRef}
-\RequirePackage{xkeyval}
+\RequirePackage{xparse,xkeyval}
 
 % Messages
 \def\wtrf@info{\PackageInfo\wtrf@pkgname}
@@ -23,14 +24,11 @@
 \newif\if@wtrf@use@scope@
 \newif\if@wtrf@use@namespace@
 \newif\if@wtrf@set@namespace@
-\newcount\wtrf@tempcnta
-\newcount\wtrf@tempcntb
 
 % Utilities
 \def\wtrf@name@def#1{\expandafter\def\csname #1\endcsname}
 \def\wtrf@name@edef#1{\expandafter\edef\csname #1\endcsname}
 \def\wtrf@name@use#1{\csname #1\endcsname}
-\def\wtrf@if@option@exists{\@ifnextchar[}
 \def\wtrf@if@reftype@not@exists#1{\@ifundefined{wtrf@#1@namespace}}
 
 % Check commands
@@ -45,11 +43,18 @@
     \wtrf@warn{Redefining \expandafter\string\csname #1\endcsname}}}
 
 % Trimming spaces
-\def\wtrf@inner@setkeys#1{\setkeys[wtrf]{inner}{key=#1}}
-\def\wtrf@trimming@spaces#1{%
-  \define@key[wtrf]{inner}{key}{\def#1{##1}}%
-  \expandafter\wtrf@inner@setkeys\expandafter{#1}%
-  \disable@keys[wtrf]{inner}{key}}
+\@tempcnta=\catcode`\Q
+\catcode`\Q=3
+\def\wtrf@trim@spaces#1{%
+  \romannumeral-`\q\wtrf@trim@trim@\noexpand#1Q Q}
+\long\def\wtrf@trim@trim@#1 Q{\wtrf@trim@trim@@#1Q}
+\long\def\wtrf@trim@trim@@#1Q#2{#1}
+\catcode`\Q=\@tempcnta
+\def\wtrf@trim@spaces@noexp#1{%
+  \unexpanded\expandafter\expandafter\expandafter
+    {\wtrf@trim@spaces{#1}}}
+\def\wtrf@trim@spaces@in#1{%
+  \edef#1{\expandafter\wtrf@trim@spaces@noexp\expandafter{#1}}}
 
 % Define keys for \newref command
 \define@key[wtrf]{ns}{namespace}{%
@@ -62,22 +67,18 @@
   \@wtrf@use@scope@true
   \def\wtrf@scope@temp{#1}}
 
-% Define \newref command
-\newcommand{\newref}{%
+% Defining the \newref command
+\NewDocumentCommand{\newref}{om}{%
   \let\wtrf@namespace@temp\@empty
   \@wtrf@use@namespace@true
   \@wtrf@set@namespace@false
   \@wtrf@use@scope@false
-  \wtrf@if@option@exists
-    {\wtrf@set@namespace}
-    {\wtrf@@newref}}
+  \IfNoValueF{#1}{\setkeys[wtrf]{ns}{#1}}%
+  \wtrf@@newref{#2}}
 \@onlypreamble\newref
-\def\wtrf@set@namespace[#1]{%
-  \setkeys[wtrf]{ns}{#1}%
-  \wtrf@@newref}
 \def\wtrf@@newref#1{%
   \@for\wtrf@temp@ref@type:=#1\do{%
-    \wtrf@trimming@spaces\wtrf@temp@ref@type
+    \wtrf@trim@spaces@in\wtrf@temp@ref@type
     \expandafter\wtrf@newref@pre\expandafter{\wtrf@temp@ref@type}}}
 \def\wtrf@newref@pre#1{%
   \wtrf@if@reftype@not@exists{#1}{%
@@ -88,7 +89,7 @@
       {You can declare ref type only once}%
   }}
 \def\wtrf@newref#1{%
-  % define namespace
+  % namespace
   \if@wtrf@use@namespace@
     \ifx\wtrf@namespace@temp\@empty
       \@wtrf@set@namespace@false
@@ -98,7 +99,7 @@
   \else
     \wtrf@name@def{wtrf@#1@namespace}{}%
   \fi
-  % define scope
+  % scope
   \if@wtrf@use@scope@
     \wtrf@name@edef{wtrf@#1@scope@cmd}{the\wtrf@scope@temp}%
     \wtrf@name@def{wtrf@#1@scope}{\csname\wtrf@name@use{wtrf@#1@scope@cmd}\endcsname:}%
@@ -115,62 +116,56 @@
     refcmd=\ref{##1},
     sep={,\space}, last sep,
     prefix={}, suffix={}}%
-  % define label command
+  % the \label-like command
   \wtrf@check@command{#1label}%
-  \wtrf@name@def{#1label}{\protect\wtrf@name@use{wtrf@#1label}}
-  \wtrf@name@def{wtrf@#1label}##1{%
+  \expandafter\DeclareExpandableDocumentCommand\csname #1label\endcsname{m}{%
     \label{\wtrf@name@use{wtrf@#1@namespace}\wtrf@name@use{wtrf@#1@scope}##1}}%
-  % define ref command
+  % the \ref-like command
   \wtrf@check@command{#1ref}%
-  \wtrf@name@def{#1ref}{\protect\wtrf@name@use{wtrf@#1ref}}
-  \wtrf@name@def{wtrf@#1ref}{%
-    \wtrf@if@option@exists
-      {\wtrf@name@use{wtrf@#1ref@with@option}}
-      {\def\wtrf@scope{\wtrf@name@use{wtrf@#1@scope}}\wtrf@name@use{wtrf@#1@print}}}%
-  % when option exists
-  \if@wtrf@use@scope@
-    \wtrf@name@def{wtrf@#1ref@with@option}[##1]##2{%
-      \def\wtrf@scope{##1:}%
-      \wtrf@name@use{wtrf@#1@print}{##2}}%
-  \else
-    \wtrf@name@def{wtrf@#1ref@with@option}[##1]##2{%
-      \let\wtrf@scope\@empty
-      \wtrf@name@use{wtrf@#1@print}{##2}}%
-  \fi
-  % print refs
-  \wtrf@name@def{wtrf@#1@print}##1{%
-    \wtrf@tempcnta\z@
-    \@for\wtrf@member:=##1\do{\advance\wtrf@tempcnta\@ne}%
-    \ifnum\wtrf@tempcnta<\tw@
-      \wtrf@name@use{wtrf@#1@prefix}%
-      \wtrf@name@use{wtrf@#1@refcmd}{%
-        \wtrf@name@use{wtrf@#1@namespace}\wtrf@scope##1}%
-      \wtrf@name@use{wtrf@#1@suffix}%
+  \expandafter\DeclareExpandableDocumentCommand\csname #1ref\endcsname{om}{%
+    \if@wtrf@use@scope@
+      \IfNoValueTF{##1}
+        {\wtrf@name@use{wtrf@#1ref}{\wtrf@name@use{wtrf@#1@scope}}{##2}}
+        {\wtrf@name@use{wtrf@#1ref}{##1:}{##2}}%
     \else
-      \wtrf@tempcntb\@ne
-      \advance\wtrf@tempcnta\m@ne
-      \wtrf@name@use{wtrf@#1@prefix}%
-      \@for\wtrf@temp@label:=##1\do{%
-        \wtrf@trimming@spaces\wtrf@temp@label
-        \wtrf@name@use{wtrf@#1@refcmd}{%
-          \wtrf@name@use{wtrf@#1@namespace}\wtrf@scope\wtrf@temp@label}%
-        \ifnum\wtrf@tempcnta>\wtrf@tempcntb
-          \wtrf@name@use{wtrf@#1@sep}%
-        \else\ifnum\wtrf@tempcnta=\wtrf@tempcntb
-          \wtrf@name@use{wtrf@#1@last@sep}%
-        \fi\fi
-        \advance\wtrf@tempcntb\@ne}%
-      \wtrf@name@use{wtrf@#1@suffix}%
-    \fi}%
+      \wtrf@name@use{wtrf@#1ref}{}{##2}%
+    \fi}
+  % construction
+  \wtrf@name@def{wtrf@#1ref}##1##2{%
+    \wtrf@name@use{wtrf@#1@prefix}%
+    \wtrf@construct##2,\wtrf@qmark\wtrf@nil{##1}{#1}%
+    \wtrf@name@use{wtrf@#1@suffix}}
   % reset \wtrf@namespace@temp
   \if@wtrf@set@namespace@\else
     \let\wtrf@namespace@temp\@empty
   \fi}
 
-% Define \setrefstyle command
-\newcommand{\setrefstyle}[2]{%
+% The constructer for \ref-like commands
+\def\wtrf@qmark{\wtrf@qmark}
+\def\wtrf@head#1#2\wtrf@nil{#1}
+%% \wtrf@construct<head>,<rest>\wtrf@nil{<scope>}{<ref type>}
+\def\wtrf@construct#1,#2\wtrf@nil#3#4{%
+  \wtrf@name@use{wtrf@#4@refcmd}{%
+    \wtrf@name@use{wtrf@#4@namespace}#3\wtrf@trim@spaces@noexp{#1}}%
+  \expandafter\ifx\wtrf@head#2\wtrf@nil\wtrf@qmark\else
+    \wtrf@construct@#2,\wtrf@qmark\wtrf@nil{#3}{#4}%
+  \fi}
+\def\wtrf@construct@#1,#2\wtrf@nil#3#4{%
+  \expandafter\ifx\wtrf@head#2\wtrf@nil\wtrf@qmark
+    \wtrf@name@use{wtrf@#4@last@sep}%
+    \wtrf@name@use{wtrf@#4@refcmd}{%
+      \wtrf@name@use{wtrf@#4@namespace}#3\wtrf@trim@spaces@noexp{#1}}%
+  \else
+    \wtrf@name@use{wtrf@#4@sep}%
+    \wtrf@name@use{wtrf@#4@refcmd}{%
+      \wtrf@name@use{wtrf@#4@namespace}#3\wtrf@trim@spaces@noexp{#1}}%
+    \wtrf@construct@#2,\wtrf@qmark\wtrf@nil{#3}{#4}%
+  \fi}
+
+% Defining \setrefstyle command
+\NewDocumentCommand{\setrefstyle}{mm}{%
   \@for\wtrf@temp@ref@type:=#1\do{%
-    \wtrf@trimming@spaces\wtrf@temp@ref@type
+    \wtrf@trim@spaces@in\wtrf@temp@ref@type
     \expandafter\wtrf@setrefstyle\expandafter{\wtrf@temp@ref@type}{#2}}}
 \def\wtrf@setrefstyle#1#2{%
   \wtrf@if@reftype@not@exists{#1}{%
