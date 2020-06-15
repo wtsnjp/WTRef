@@ -1,0 +1,69 @@
+\documentclass{article}
+
+% packages
+\usepackage{wtref}
+
+% support files
+\input{regression-test.tex}
+
+% utility
+\def\TestInterface#1{%
+  \bgroup \let\label\relax \let\ref\relax
+  \edef\test{#1}%
+  \TYPE{\unexpanded\expandafter{\test}}%
+  \egroup}
+
+% settings
+\newref{my, sec}
+\newref[nonamespace]{g}
+\newref[namespace=figtab, scope=\thesection]{fig, tab}
+
+\begin{document}
+
+\START
+
+\TEST{label command with default config}{%
+  \TestInterface{\mylabel{test0}}%
+}
+
+\TEST{default reference command with default config}{%
+  \TestInterface{\myref{test0, test1, test2}}%
+}
+
+\TEST{option should be ignored without scope feature}{%
+  \TestInterface{\myref[x]{test0, test1, test2}}%
+}
+
+\TEST{ref-like command with and without style}{%
+  \bgroup
+  \setrefstyle{sec}{
+    prefix={Section\space},
+    refcmd={\relax{#1}},
+    last sep={,\space and\space},
+  }
+  \TestInterface{\secref{test0, test1, test2}}%
+  \egroup
+  \TestInterface{\secref{test0, test1, test2}}%
+}
+
+\TEST{label command without namespace}{%
+  \TestInterface{\glabel{test0}}%
+}
+
+\TEST{reference command without namespace}{%
+  \TestInterface{\gref{test0,test1,test2}}%
+}
+
+\TEST{label commands with the scope feature}{%
+  \TestInterface{\figlabel{test0}}%
+  \TestInterface{\tablabel{test1}}%
+}
+
+\TEST{ref commands with the scope feature}{%
+  \TestInterface{\figref{test0, test1}}%
+  \TestInterface{\tabref[x]{test0, test1}}%
+}
+
+\END
+
+\end{document}
