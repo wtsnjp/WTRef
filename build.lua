@@ -5,13 +5,15 @@ module = "wtref"
 version = "0.4.0"
 
 -- check settings
-stdengine = "pdftex"
 checkengines = {"pdftex"}
 checkformat = "latex"
 
 -- doc settings
 typesetfiles = {}
-docfiles = {module .. '.tex', module .. '-ja.tex'}
+docfiles = {
+  module .. '.tex', module .. '-ja.tex',
+  module .. '.pdf', module .. '-ja.pdf',
+}
 
 -- ctan settings
 ctanzip = module .. "-" .. version
