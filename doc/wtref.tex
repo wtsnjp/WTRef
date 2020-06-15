@@ -1,13 +1,16 @@
+%#!pdflatex
 \documentclass[a4paper]{article}
 
 \usepackage{enumitem}
 \usepackage{shortvrb}
+
 \MakeShortVerb{\|}
-\newcommand{\PkgName}{\textsf{WTRef}}
+\newcommand{\PkgName}[1]{\textsf{#1}}
+\newcommand{\ThisPkg}{\PkgName{WTRef}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}\textit{#1}\mbox{}$\rangle$}
 \newenvironment{syntax}{\begin{quote}\small}{\end{quote}}
 
-\title{{\PkgName} Package (v0.3.2)}
+\title{The {\ThisPkg} Package (v0.4.0)}
 \author{Takuto ASAKURA (wtsnjp)}
 
 \begin{document}
@@ -15,27 +18,28 @@
 \maketitle
 
 \begin{abstract}
-WT Series collects macros which author frequently use to create {\LaTeX} documents.
-{\PkgName} package is a part of this WT Series that extend {\LaTeX} original
-cross-reference system. It makes enable to divide namespace and scope, further arrows users
-to customise reference formats. {\LaTeXe} on any kind of {\TeX} engine is supported, and
-\textsf{xkeyval} package is required.
+WT Series collects macros which are useful to create {\LaTeX} documents.
+{\ThisPkg} package is a part of this WT Series that extends cross-reference
+system of {\LaTeX}. It makes enable to divide namespace and scope, further
+arrows users to customise reference formats. {\LaTeXe} on any kind of {\TeX}
+engine is supported. The package requires Package \PkgName{xparse} and
+\PkgName{xkeyval}.
 \end{abstract}
 
 \section{System Requirements}
 
-System requirements of {\PkgName} are shown bellow:
+System requirements of {\ThisPkg} are shown bellow:
 %
 \begin{itemize}
 \item {\TeX} engine: any engine
 \item {\TeX} format: \LaTeXe
 \item Document class: any class
-\item Required package: \textsf{xkeyval}
+\item Required packages: \PkgName{xparse} and \PkgName{xkeyval}
 \end{itemize}
 
-\section{Loading the {\PkgName} Package}
+\section{Loading the {\ThisPkg} Package}
 
-To use {\PkgName} package, load \texttt{wtref.sty} file with |\usepackage| command in preamble.
+To use {\ThisPkg} package, load \texttt{wtref.sty} file with |\usepackage| command in preamble.
 No package option is available.
 %
 \begin{syntax}
