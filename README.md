@@ -1,6 +1,6 @@
-# WTRef Package (v0.4.0)
+# Package WTRef (v0.4.0)
 
-WTRef package is a small extension for LaTeX2e's cross-reference system. It introduces concepts of namespace and scope. This package is a part of the WT Series.
+Package WTRef is a small extension for LaTeX2e's cross-reference system. It introduces concepts of namespace and scope. This package is a part of the WT Series.
 
 ## System Requirements
 

@@ -9,6 +9,8 @@
 \newcommand{\ThisPkg}{\PkgName{WTRef}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}\textit{#1}\mbox{}$\rangle$}
 \newenvironment{syntax}{\begin{quote}\small}{\end{quote}}
+\newcommand{\eg}{e.g.,\,}
+\newcommand{\ie}{i.e.,\,}
 
 \title{The {\ThisPkg} Package (v0.4.0)}
 \author{Takuto ASAKURA (wtsnjp)}
@@ -18,17 +20,15 @@
 \maketitle
 
 \begin{abstract}
-WT Series collects macros which are useful to create {\LaTeX} documents.
-{\ThisPkg} package is a part of this WT Series that extends cross-reference
-system of {\LaTeX}. It makes enable to divide namespace and scope, further
-arrows users to customise reference formats. {\LaTeXe} on any kind of {\TeX}
-engine is supported. The package requires Package \PkgName{xparse} and
-\PkgName{xkeyval}.
+Package {\ThisPkg} is a small extension for {\LaTeXe}'s cross-referencing. It
+enables you to divide namespace and scope. It also provides a few ways to
+customise referencing formats. {\LaTeXe} on any kind of {\TeX} engine is
+supported. The package requires Package \PkgName{xparse} and \PkgName{xkeyval}.
 \end{abstract}
 
-\section{System Requirements}
+\section{System requirements}
 
-System requirements of {\ThisPkg} are shown bellow:
+{\ThisPkg} requires the following.
 %
 \begin{itemize}
 \item {\TeX} engine: any engine
@@ -37,137 +37,143 @@ System requirements of {\ThisPkg} are shown bellow:
 \item Required packages: \PkgName{xparse} and \PkgName{xkeyval}
 \end{itemize}
 
-\section{Loading the {\ThisPkg} Package}
+\section{Loading the package}
 
-To use {\ThisPkg} package, load \texttt{wtref.sty} file with |\usepackage| command in preamble.
-No package option is available.
+The package should be loaded in the usual {\LaTeXe} way. No package option is
+available.
 %
 \begin{syntax}
 |\usepackage{wtref}|
 \end{syntax}
 
-\section{Cross-Reference Commands}
+\section{Cross-reference commands}
 
-\subsection{Definition of New Cross-Reference Commands}
+\subsection{Declaring new cross-reference commands}
 
-|\newref| command creates a set of cross-reference commands. This command can only be used
-in preamble.
+The |\newref| command creates a pair of cross-reference commands. This command
+can be used in preamble only.
 %
 \begin{syntax}
 |\newref[|\Meta{options}|]{|\Meta{ref types}|}|
 \end{syntax}
 %
-\Meta{ref types} are comma-separated list of \Meta{ref type}. All characters of \Meta{ref type}
-must be able to use in control sequence (only ordinary alphabet is recommended) and can not be
-empty. Notice that leading and trailing spaces and successive spaces arround commas are ignored.
+Herein, \Meta{ref types} is a comma-separated list of \Meta{ref type}. All
+characters consisting of \Meta{ref type} must be `letter' so that they can be
+used for control sequences (recommended to use ASCII alphabets only) and may
+not be empty. Notice that leading and trailing spaces and successive spaces
+around commas are ignored.
 
-|\newref| command defines two commands: |\|\Meta{ref type}|label|, |\|\Meta{ref type}|ref|.
-In this document, the formar are called \textbf{label commands} and the latter are called
-\textbf{reference commands}. |\newref| command overwrites existing commands, so \Meta{ref name}
-should be decided carefully.
+The |\newref| command defines pairs of cross-referencing commands, |\|\Meta{ref
+type}|label| and |\|\Meta{ref type}|ref| for each given \Meta{ref type}. In
+this document, we call the former \emph{label commands} and the latter
+\emph{reference commands}. Notice that the |\newref| command may overwrites
+existing commands (with warning messages), so \Meta{ref name} should be decided
+carefully.
 
-In \Meta{options}, you can set following parameters by key-value list:
+In \Meta{options}, you can set the following parameters with key-value list:
 %
 \begin{description}[font=\normalfont]
-\item[|namespace=|\Meta{string}]
-Set \Meta{namespace} to ``\Meta{string}:''. If neither |namespace| nor |nonamespace| are
-specified, or in case \Meta{string} of |namespace| is empty, \Meta{namespace} is set to
+\item[|namespace=|\Meta{string}] sets \Meta{namespace} to ``\Meta{string}:''.
+In case neither |namespace| nor |nonamespace| is specified, or \Meta{string} of
+|namespace| is empty, the \Meta{namespace} parts in labels are set to
 ``\Meta{ref type}:''.
 %
-\item[|nonamespace|]
-Set \Meta{namespace} to empty. That is to say, invalidation of function that dividing
-namespace. It should be noted that you can specify value for |nonamespace| and that
-will not make any errors, but the value will simply be ignored.
+\item[|nonamespace|] sets \Meta{namespace} to empty. That is to say, the
+namespace function for the package is disabled. You can give a value for the
+|nonamespace| key without any error, but the value will be simply ignored.
 %
-\item[|scope=|\Meta{counter}]
-Specify counter which used as scope. You can specify any {\LaTeX} counter to \Meta{counter}
-but one which has uniqueness in a document is desirable. This key sets \Meta{scope} to
-``|\the|\Meta{counter}:''.
+\item[|scope=|\Meta{counter}] sets counter which used as scope. Though you can
+specify arbitrary {\LaTeX} counter for \Meta{counter}, normally those which
+have uniqueness in a document are useful. The \Meta{scope} parts in labels are
+set to ``|\the|\Meta{counter}:''.
 \end{description}
 %
-These optional settings apply to all cross-referece commands relate to \Meta{ref type}
-in specified \Meta{ref types}.
+These optional settings apply to all pairs of cross-reference commands
+corresponding to \Meta{ref type}s in specified \Meta{ref types}.
 
-Identically, if any keys do not specified in \Meta{options}, \Meta{namespace} is set to
-``\Meta{ref type}'' and \Meta{scope} is set to empty. In other words, the function of
-namespace is active and function of scope is inactive as default.
+Identically, if any keys do not specified in \Meta{options}, \Meta{namespace}
+is set to ``\Meta{ref type}'', and \Meta{scope} is set to empty. In other words,
+while the namespace function is enabled by default, the scope function is not.
 
-\subsection{Label Commands}
+\subsection{Label commands}
 
-\subsubsection{Function and Usage}
-
-Label commands are used to create new labels. Usage of those are same to |\label| command
-of standard {\LaTeX}. Usage of |\exlabel| is shown bellow as an example:
+Label commands are used for making new labels. The usage of them are the same
+as the standard |\label| command of {\LaTeXe}, \eg
 %
 \begin{syntax}
 |\exlabel{|\Meta{label}|}|
 \end{syntax}
 
-\subsubsection{Internal Processing}
-
-Label commands finaly are expanded to following format:
+The label commands are equivalent to the following after a full-expansion:
 %
 \begin{syntax}
 |\label{|\Meta{namespace}\Meta{scope}\Meta{label}|}|
 \end{syntax}
 
-\subsection{Reference Commands}
+\subsection{Reference commands}
 
-Reference commands print contents of counters which labeled by label commands in specified
-formats. Usage of |\exref| is shown bellow as an example:
+Reference commands print contents of counters which labeled by label commands
+in specified formats. The following is the syntax of an example reference
+command |\exref|:
 %
 \begin{syntax}
 |\exref[|\Meta{the scope}|]{|\Meta{label list}|}|
 \end{syntax}
 
-The option argument \Meta{the scope} can be ommited when refering label exists in the
-same scope. You can refer outside of scope by writing down the output of proper
-|\the|\Meta{counter}. Notice that if the function of scope is inactive
-(i.e. in case |scope| key does not specified in \Meta{options} of |\newref|), this argument
-is always unnecessary, and in other words it will be ignored all the time.
+The option argument \Meta{the scope} can be omitted when the specified label
+exists in the same scope. You can refer to labels outside a scope by specifying
+the target scope explicitly, that is the output of proper |\the|\Meta{counter},
+in the option argument. Notice that if the function of scope is inactive (\ie
+in case |scope| key does not specified in \Meta{options} of |\newref|), this
+argument is always unnecessary, and it will be ignored all the time.
 
-In argument \Meta{label list}, plural labels can be written in comma-separated. Note that
-leading and trailing spaces and successive spaces arround commas are ignored. If actually
-plural labels are filled in, pertinent counters should be printed out in comma-separate
-form in default. You can change this format flexibly with |\setrefstyle| command.
+In argument \Meta{label list}, you can specify multiple labels in a form of
+comma-separated list. Note that leading and trailing spaces and successive
+spaces around commas are ignored. In the case, pertinent counters should be
+printed in comma-separate form by default. You can change this format
+flexibly with the |\setrefstyle| command.
 
-\section{Setting Referece Style}
+\section{Setting referencing style}
 
-The output format of reference commands can be customised with |\setrefstyle| command.
-The syntax of |\setrefstyle| is shown bellow:
+The output format of reference commands can be customised with the
+|\setrefstyle| command. The syntax of the command is as follows:
 %
 \begin{syntax}
 |\setrefstyle{|\Meta{ref types}|}{|\Meta{options}|}|
 \end{syntax}
 
-The |\setrefstyle| command can be used any place of {\LaTeX} document (not only preamble),
-and change reference format locally.
+The |\setrefstyle| command can be used anywhere in {\LaTeX} documents, not
+limited to preambles, and sets the reference format locally.
 
-In \Meta{options}, you can set following parameters by key-value list:
+In \Meta{options}, you can set the following parameters with a key-value list:
 %
 \begin{description}[font=\normalfont]
-\item[|refcmd=|\Meta{command}]
-Specified \Meta{command} repeated for the number of labels which filled in \Meta{label list}
-time. String |#1| in \Meta{command} may be replaced into appropriate label name. The default
-value is |\ref{#1}|.
+\item[|refcmd=|\Meta{ref command}] sets the \Meta{ref command} to used for actual
+referencing functionality. Herein, |#1| in the \Meta{command} may be replaced
+into suitable label name. The default value is |\ref{#1}|. The \Meta{command}
+may be used repeatedly for the number of labels in the given \Meta{label list}.
 %
-\item[|sep=|\Meta{command}]
-Specified \Meta{command} is output as a separater of each |refcmd| when more than three
-labels filled in \Meta{label list}. Notice that last one separater is given by |last sep|.
-The default value is |{,\space}|.
+\item[|sep=|\Meta{separator}] sets the \Meta{separator}, which used between
+each \Meta{ref command}, in case more than three labels are given for a
+\Meta{label list}. Notice that last one separator is set by |last sep|. The
+default value is |{,\space}|.
 %
-\item[|last sep|(|=|\Meta{command})]
-Specified \Meta{command} is output as a last separater when plura labels filled in
-\Meta{label list}. Behind the |=| can be ommited, and in that case |last sep| is set
-to identical value of |sep| (and this is the default).
+\item[|last sep|(|=|\Meta{last separator})] sets \Meta{last separator} to used
+for the last separator between the \Meta{ref command}s, in case multiple labels
+are given in \Meta{label list}. The part after |=| can be omitted. In that case,
+|last sep| is set to identical value of |sep|, and this is the default
+behavior.
 %
-\item[|prefix=|\Meta{command}]
-Specified \Meta{command} put out first when referece command used. The default value is |{}|.
+\item[|prefix=|\Meta{prefix}]
+sets \Meta{prefix} to be put in front of the first \Meta{ref command} when the
+reference commands are used. The default value is |{}|.
 %
-\item[|suffix=|\Meta{command}]
-Specified \Meta{command} put out last when referece command used. The default value is |{}|.
+\item[|suffix=|\Meta{suffix}] sets \Meta{suffix} to be put behind the last
+\Meta{ref command} when reference commands are used. The default value is |{}|.
 \end{description}
 %
-Parameters which do not set explicitly will not be changed.
+Values of the keys which do not set explicitly in the \Meta{options} are left
+unchanged.
 
 \end{document}
+% vim: spell:
