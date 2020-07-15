@@ -46,7 +46,7 @@
 \@tempcnta=\catcode`\Q
 \catcode`\Q=3
 \def\wtrf@trim@spaces#1{%
-  \romannumeral-`\q\wtrf@trim@trim@\noexpand#1Q Q}
+  \romannumeral-`>\wtrf@trim@trim@\noexpand#1Q Q}
 \long\def\wtrf@trim@trim@#1 Q{\wtrf@trim@trim@@#1Q}
 \long\def\wtrf@trim@trim@@#1Q#2{#1}
 \catcode`\Q=\@tempcnta
@@ -148,7 +148,7 @@
   \wtrf@name@use{wtrf@#4@refcmd}{%
     \wtrf@name@use{wtrf@#4@namespace}#3\wtrf@trim@spaces@noexp{#1}}%
   \expandafter\ifx\wtrf@head#2\wtrf@nil\wtrf@qmark\else
-    \wtrf@construct@#2,\wtrf@qmark\wtrf@nil{#3}{#4}%
+    \wtrf@construct@#2\wtrf@nil{#3}{#4}%
   \fi}
 \def\wtrf@construct@#1,#2\wtrf@nil#3#4{%
   \expandafter\ifx\wtrf@head#2\wtrf@nil\wtrf@qmark
@@ -159,7 +159,7 @@
     \wtrf@name@use{wtrf@#4@sep}%
     \wtrf@name@use{wtrf@#4@refcmd}{%
       \wtrf@name@use{wtrf@#4@namespace}#3\wtrf@trim@spaces@noexp{#1}}%
-    \wtrf@construct@#2,\wtrf@qmark\wtrf@nil{#3}{#4}%
+    \wtrf@construct@#2\wtrf@nil{#3}{#4}%
   \fi}
 
 % Defining \setrefstyle command
