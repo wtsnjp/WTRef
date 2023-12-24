@@ -119,7 +119,9 @@
   % the \label-like command
   \wtrf@check@command{#1label}%
   \expandafter\DeclareExpandableDocumentCommand\csname #1label\endcsname{m}{%
-    \label{\wtrf@name@use{wtrf@#1@namespace}\wtrf@name@use{wtrf@#1@scope}##1}}%
+    \expandafter\expandafter\expandafter\label\expandafter\expandafter\expandafter
+      {\csname wtrf@#1@namespace\expandafter\endcsname
+       \romannumeral-`>\csname wtrf@#1@scope\endcsname ##1}}%
   % the \ref-like command
   \wtrf@check@command{#1ref}%
   \expandafter\DeclareExpandableDocumentCommand\csname #1ref\endcsname{om}{%
