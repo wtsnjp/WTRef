@@ -1,6 +1,6 @@
-# Package WTRef (v0.4.0)
+# Package WTRef (v1.0.0)
 
-Package WTRef is a small extension for LaTeX2e's cross-reference system. It introduces concepts of namespace and scope. This package is a part of the WT Series.
+The WTRef package is a small extension for the LaTeX cross-reference system. It introduces concepts of namespace and scope. This package is part of the WT bundle.
 
 ## System Requirements
 
@@ -15,7 +15,7 @@ Move wtref.sty file to $TEXMF/tex/latex/wtref.
 
 ## Documents
 
-Documents for this pacakge are available in [English](http://mirrors.ctan.org/macros/latex/contrib/wtref/wtref.pdf) and [Japanese](http://mirrors.ctan.org/macros/latex/contrib/wtref/wtref-ja.pdf).
+Documents for this package are available in [English](http://mirrors.ctan.org/macros/latex/contrib/wtref/wtref.pdf) and [Japanese](http://mirrors.ctan.org/macros/latex/contrib/wtref/wtref-ja.pdf).
 
 ## License
 
@@ -23,4 +23,4 @@ This package released under [the MIT license](./LICENSE).
 
 ---
 
-Takuto ASAKURA ([wtsnjp](https://twitter.com/wtsnjp))
+Takuto Asakura ([wtsnjp](https://twitter.com/wtsnjp))
